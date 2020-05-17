@@ -19,19 +19,14 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 
-	m_picturesPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_picturesPanel->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_INFOBK ) );
-
-	bSizer2->Add( m_picturesPanel, 1, wxEXPAND | wxALL, 5 );
+	m_btnChooseDirectory = new wxButton( this, wxID_ANY, wxT("Wybierz folder ze zdjeciami"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_btnChooseDirectory, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
 	bSizer1->Add( bSizer2, 1, wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer3;
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
-
-	m_btnChooseDirectory = new wxButton( this, wxID_ANY, wxT("Wybierz folder ze zdjeciami"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer3->Add( m_btnChooseDirectory, 0, wxALIGN_CENTER|wxALL, 5 );
 
 	m_tbExifInfo = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	m_tbExifInfo->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_MENU ) );
