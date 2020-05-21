@@ -4,13 +4,18 @@
 
 //public:
 
-LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel)
+LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel, wxSizer* sizer, wxGridSizer* m_buttonsSizer)
 	: m_path(path),
 	m_textPanel(textPanel),
 	m_bmpImage(std::unique_ptr<wxBitmap>(new wxBitmap(path, wxBITMAP_TYPE_JPEG))),
-	m_btnImage(std::unique_ptr<wxBitmapButton>(new wxBitmapButton(parent, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(100, 100), wxDefaultPosition, wxSize(100, 100))))
+	m_btnImage(std::unique_ptr<wxBitmapButton>(new wxBitmapButton(parent, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(100, 100), wxDefaultPosition, wxSize(100, 100)))),
+	m_leftSizer(sizer),
+	m_buttonsSizer(m_buttonsSizer),
+	m_parent(parent)
 {
+	m_bmpBig = std::unique_ptr<wxBitmap>(new wxBitmap(path, wxBITMAP_TYPE_JPEG));
 	m_btnImage->Bind(wxEVT_BUTTON, &LoadedImage::m_btnLoadedImageOnButtonClick, this);
+	m_btnImage->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClick, this);
 }
 
 wxBitmapButton* LoadedImage::GetButton() const
@@ -62,6 +67,25 @@ void LoadedImage::m_btnLoadedImageOnButtonClick(wxCommandEvent& event)
 	m_textPanel->Clear();
 	m_textPanel->AppendText(getExifInfo());
 	m_textPanel->AppendText(getIptcInfo());
+}
+
+void LoadedImage::m_btnLoadedImageDoubleClick(wxMouseEvent& event)
+{
+	wxSize size = m_leftSizer->GetSize();
+	m_leftSizer->Hide(m_buttonsSizer);
+	wxImage temp = m_bmpBig->ConvertToImage();
+	int h = temp.GetHeight();
+	int w = temp.GetWidth();
+	int new_w = size.x;
+	int new_h = size.x*h / static_cast<double>(w);
+	m_btnBig = std::unique_ptr<wxBitmapButton>(new wxBitmapButton(m_parent, wxID_ANY, m_bmpBig->ConvertToImage().Rescale(new_w, new_h), wxPoint(0, 40), wxSize(new_w, new_h)));
+	m_btnBig->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClickBack, this);
+}
+
+void LoadedImage::m_btnLoadedImageDoubleClickBack(wxMouseEvent& event)
+{
+	m_leftSizer->Show(m_buttonsSizer);
+	m_btnBig = nullptr;
 }
 
 std::string LoadedImage::getExifInfo() const
