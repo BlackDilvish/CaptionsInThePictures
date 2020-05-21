@@ -25,7 +25,7 @@ void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event )
 		m_loadedImages.clear();
 		for (size_t i=0; i<paths.size(); i++)
 		{
-			m_loadedImages.push_back(std::unique_ptr<LoadedImage>(new LoadedImage(paths[i], this, m_tbExifInfo)));
+			m_loadedImages.push_back(std::unique_ptr<LoadedImage>(new LoadedImage(paths[i], this, m_tbExifInfo, m_leftSizer, m_buttonsSizer)));
 			m_buttonsSizer->Add(m_loadedImages[i]->GetButton());
 		}
 

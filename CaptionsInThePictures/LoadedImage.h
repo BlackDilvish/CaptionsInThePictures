@@ -7,17 +7,20 @@
 #include <utility>
 #include <vector>
 #include <wx\richtext\richtextctrl.h>
+#include <wx/sizer.h>
 
 class LoadedImage
 {
 public:
-	LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel);
+	LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel, wxSizer* sizer, wxGridSizer* m_buttonsSizer);
 
 	wxBitmapButton* GetButton() const;
 
 	std::vector < std::pair <wxString, wxString> > getInfoArr() const;
 private:
 	void m_btnLoadedImageOnButtonClick(wxCommandEvent& event);
+	void m_btnLoadedImageDoubleClick(wxMouseEvent& event);
+	void m_btnLoadedImageDoubleClickBack(wxMouseEvent& event);
 
 	std::string getExifInfo() const;
 	std::string getIptcInfo() const;
@@ -25,7 +28,12 @@ private:
 	std::string m_path;
 	wxRichTextCtrl* m_textPanel;
 	std::unique_ptr<wxBitmap> m_bmpImage;
+	std::unique_ptr<wxBitmap> m_bmpBig;
 	std::unique_ptr<wxBitmapButton> m_btnImage;
+	std::unique_ptr<wxBitmapButton> m_btnBig;
 	int m_clickedCount = 0;
+	wxSizer* m_leftSizer;
+	wxGridSizer* m_buttonsSizer;
+	wxWindow* m_parent;
 };
 
