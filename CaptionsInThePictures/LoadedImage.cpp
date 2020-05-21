@@ -2,6 +2,8 @@
 #include <exiv2/exiv2.hpp>
 #include <sstream>
 
+//public:
+
 LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel)
 	: m_path(path),
 	m_textPanel(textPanel),
@@ -15,6 +17,45 @@ wxBitmapButton* LoadedImage::GetButton() const
 {
 	return m_btnImage.get();
 }
+
+std::vector < std::pair <wxString, wxString> > LoadedImage::getInfoArr() const
+{
+	std::vector < std::pair <wxString, wxString> > infoArr; 
+
+	Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(m_path);
+	assert(image.get() != 0);
+	image->readMetadata();
+
+	infoArr.push_back(std::make_pair<wxString, wxString>("Sciezka pliku", m_path));
+
+	Exiv2::ExifData& exifData = image->exifData();
+	Exiv2::ExifData::const_iterator end1 = exifData.end();
+	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end1; ++i)
+	{
+		const char* tn = i->typeName();
+		if (std::string(tn) != "Undefined")
+		{
+			std::stringstream key, value;
+			key << i->key();
+			value << i->value();
+			infoArr.push_back(std::make_pair<wxString, wxString>(key.str(), value.str()));
+		}
+	}
+
+	Exiv2::IptcData& iptcData = image->iptcData();
+	Exiv2::IptcData::iterator end2 = iptcData.end();
+	for (Exiv2::IptcData::iterator i = iptcData.begin(); i != end2; ++i) 
+	{
+		std::stringstream key, value;
+		key << i->key();
+		value << i->value();
+		infoArr.push_back(std::make_pair<wxString, wxString>(key.str(), value.str()));
+	}
+
+	return infoArr;
+}
+
+//private:
 
 void LoadedImage::m_btnLoadedImageOnButtonClick(wxCommandEvent& event)
 {
@@ -36,7 +77,7 @@ std::string LoadedImage::getExifInfo() const
 
 	Exiv2::ExifData& exifData = image->exifData();
 	if (exifData.empty())
-		ss << "No Exif data found in file";
+		ss << "No Exif data found in the file\n";
 
 	Exiv2::ExifData::const_iterator end = exifData.end();
 	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i)
@@ -63,10 +104,11 @@ std::string LoadedImage::getIptcInfo() const
 
 	Exiv2::IptcData& iptcData = image->iptcData();
 	if (iptcData.empty())
-		ss << ": No IPTC data found in the file\n";
+		ss << "No IPTC data found in the file\n";
 
 	Exiv2::IptcData::iterator end2 = iptcData.end();
-	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != end2; ++md) {
+	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != end2; ++md) 
+	{
 		ss << std::setw(60) << std::setfill(' ') << std::left
 			<< md->key() << " " << md->value() << std::endl;
 	}

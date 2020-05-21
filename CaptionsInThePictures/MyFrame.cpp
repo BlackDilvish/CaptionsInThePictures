@@ -28,6 +28,9 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxBoxSizer* bSizer3;
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 
+	m_btnExportInfo = new wxButton( this, wxID_ANY, wxT("Eksportuj dane"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer3->Add( m_btnExportInfo, 0, wxALIGN_CENTER|wxALL, 5 );
+
 	m_tbExifInfo = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	m_tbExifInfo->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_MENU ) );
 
@@ -44,11 +47,13 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 
 	// Connect Events
 	m_btnChooseDirectory->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnChooseDirectoryOnButtonClick ), NULL, this );
+	m_btnExportInfo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnExportInfoOnButtonClick ), NULL, this );
 }
 
 MyFrame::~MyFrame()
 {
 	// Disconnect Events
 	m_btnChooseDirectory->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnChooseDirectoryOnButtonClick ), NULL, this );
+	m_btnExportInfo->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnExportInfoOnButtonClick ), NULL, this );
 
 }
