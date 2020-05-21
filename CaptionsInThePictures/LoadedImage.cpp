@@ -13,7 +13,6 @@ LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCt
 	m_buttonsSizer(m_buttonsSizer),
 	m_parent(parent)
 {
-	m_bmpBig = std::unique_ptr<wxBitmap>(new wxBitmap(path, wxBITMAP_TYPE_JPEG));
 	m_btnImage->Bind(wxEVT_BUTTON, &LoadedImage::m_btnLoadedImageOnButtonClick, this);
 	m_btnImage->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClick, this);
 }
@@ -21,6 +20,11 @@ LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCt
 wxBitmapButton* LoadedImage::GetButton() const
 {
 	return m_btnImage.get();
+}
+
+const wxBitmap* LoadedImage::GetBitmap() const
+{
+	return m_bmpImage.get();
 }
 
 std::vector < std::pair <wxString, wxString> > LoadedImage::getInfoArr() const
@@ -73,12 +77,12 @@ void LoadedImage::m_btnLoadedImageDoubleClick(wxMouseEvent& event)
 {
 	wxSize size = m_leftSizer->GetSize();
 	m_leftSizer->Hide(m_buttonsSizer);
-	wxImage temp = m_bmpBig->ConvertToImage();
+	wxImage temp = m_bmpImage->ConvertToImage();
 	int h = temp.GetHeight();
 	int w = temp.GetWidth();
 	int new_w = size.x;
 	int new_h = size.x*h / static_cast<double>(w);
-	m_btnBig = std::unique_ptr<wxBitmapButton>(new wxBitmapButton(m_parent, wxID_ANY, m_bmpBig->ConvertToImage().Rescale(new_w, new_h), wxPoint(0, 40), wxSize(new_w, new_h)));
+	m_btnBig = std::unique_ptr<wxBitmapButton>(new wxBitmapButton(m_parent, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(new_w, new_h), wxPoint(0, 40), wxSize(new_w, new_h)));
 	m_btnBig->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClickBack, this);
 }
 

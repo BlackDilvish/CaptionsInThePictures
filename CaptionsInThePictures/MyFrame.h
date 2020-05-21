@@ -35,11 +35,13 @@ class MyFrame : public wxFrame
 	protected:
 		wxButton* m_btnChooseDirectory;
 		wxButton* m_btnExportInfo;
+		wxButton* m_btnWriteInfoInPicture;
 		wxRichTextCtrl* m_tbExifInfo;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void m_btnExportInfoOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void m_btnWriteInfoInPictureOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
