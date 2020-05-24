@@ -29,7 +29,6 @@ private:
 	std::string m_path;
 	wxRichTextCtrl* m_textPanel;
 	std::unique_ptr<wxBitmap> m_bmpImage;
-	std::unique_ptr<wxBitmap> m_bmpBig;
 	std::unique_ptr<wxBitmapButton> m_btnImage;
 	std::unique_ptr<wxBitmapButton> m_btnBig;
 	wxSizer* m_leftSizer;

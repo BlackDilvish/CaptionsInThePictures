@@ -74,25 +74,33 @@ void CaptionsMyFrame::m_btnWriteInfoInPictureOnButtonClick( wxCommandEvent& even
 {
 	if (!m_name.empty() && !m_loadedImages.empty())
 	{
-		std::unique_ptr<wxSingleChoiceDialog> choiceDialog{ new wxSingleChoiceDialog(this, "Wybierz zdjecie", "Wypisz atrybuty na zdjeciu", m_name.size(), m_name.data()) };
-		std::stringstream toSave;
+		std::unique_ptr<wxMultiChoiceDialog> choiceDialog{ new wxMultiChoiceDialog(this, "Wybierz zdjecia", "Eksportuj informacje o zdjeciach", m_name.size(), m_name.data()) };
 
 		if (choiceDialog->ShowModal() == wxID_OK)
 		{
-			auto i = choiceDialog->GetSelection();
-			toSave << "\n" << m_name[i] << ":\n" << openSelectWindow(i);
+			auto selections = choiceDialog->GetSelections();
+			std::vector<std::stringstream> captionsVector(selections.GetCount());
+			int i = 0;
 
-			wxMemoryDC mdc;
-			std::unique_ptr<wxBitmap> bmp{ new wxBitmap(*m_loadedImages[i]->GetBitmap()) };
-			mdc.SelectObject(*bmp);
-			mdc.DrawText(toSave.str(), wxPoint(10, 10));
+			for (const int& x : selections)
+			{
+				captionsVector[i] << "\n" << m_name[x] << ":\n" << openSelectWindow(x);
 
-			std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, _("Save info file"), "", "","jpg files (*.jpg)|*.jpg", wxFD_SAVE) };
+				wxMemoryDC mdc;
+				std::unique_ptr<wxBitmap> bmp{ new wxBitmap(*m_loadedImages[x]->GetBitmap()) };
+				mdc.SelectObject(*bmp);
+				mdc.DrawText(captionsVector[i++].str(), wxPoint(10, 10));
 
-			if (saveDialog->ShowModal() == wxID_OK)
-				bmp->SaveFile(saveDialog->GetPath(), wxBITMAP_TYPE_JPEG);
+				std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, std::string("Zapisz nowe " + m_name[x]), "", "","jpg files (*.jpg)|*.jpg", wxFD_SAVE) };
 
-			mdc.SelectObject(wxNullBitmap);
+				if (saveDialog->ShowModal() == wxID_OK)
+					bmp->SaveFile(saveDialog->GetPath(), wxBITMAP_TYPE_JPEG);
+
+				mdc.SelectObject(wxNullBitmap);
+			}
+
+			std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, "Pomyslnie zapisano " + std::to_string(i) + " nowych zdjec", "Sukces") };
+			messageDialog->ShowModal();
 		}
 	}
 	else
