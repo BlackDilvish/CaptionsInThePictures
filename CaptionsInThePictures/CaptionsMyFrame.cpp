@@ -19,7 +19,7 @@ void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick(wxCommandEvent& event)
 		if (m_leftSizer->GetItemCount() > 1)
 			m_leftSizer->Hide(m_leftSizer->GetItemCount() - 1);
 
-		m_buttonsSizer = new wxGridSizer(6, 4, 1, 1);
+		m_buttonsSizer = new wxGridSizer(paths.size()/4 + 1, 4, 1, 1);
 		m_leftSizer->Add(m_buttonsSizer);
 
 		m_loadedImages.clear();
@@ -119,7 +119,7 @@ void CaptionsMyFrame::m_btnReadCaptionsFromFileOnButtonClick( wxCommandEvent& ev
 		wxTextFile file;
 		if (inputStream.IsOk() && file.Open(fileDialog->GetPath()))
 		{
-			std::string line = file.GetFirstLine();
+			std::string line(file.GetFirstLine());
 			int index = checkIfFileName(line);
 			std::stringstream toSave;
 

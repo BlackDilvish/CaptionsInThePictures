@@ -127,9 +127,6 @@ std::string LoadedImage::getIptcInfo() const
 
 	std::stringstream ss;
 
-	ss << std::setw(60) << std::setfill(' ') << std::left
-		<< "Sciezka pliku:" << " " << m_path << "\n";
-
 	Exiv2::IptcData& iptcData = image->iptcData();
 	if (iptcData.empty())
 		ss << "No IPTC data found in the file\n";
