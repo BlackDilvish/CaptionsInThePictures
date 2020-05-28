@@ -1,29 +1,29 @@
 #include "CaptionsMyFrame.h"
 
-CaptionsMyFrame::CaptionsMyFrame( wxWindow* parent )
-:
-MyFrame( parent )
+CaptionsMyFrame::CaptionsMyFrame(wxWindow* parent)
+	:
+	MyFrame(parent)
 {
 	SetTitle("Napisy na zdjeciach");
 }
 
-void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event )
+void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick(wxCommandEvent& event)
 {
-	std::unique_ptr<wxDirDialog> dirDialog{ new wxDirDialog(this, "Choose input directory", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST) };
+	std::unique_ptr<wxDirDialog> dirDialog{ new wxDirDialog(this, "Wybierz folder", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST) };
 
 	if (dirDialog->ShowModal() == wxID_OK)
 	{
 		m_name.clear();
 		auto paths = getImages(dirDialog->GetPath());
 
-		if(m_leftSizer->GetItemCount() > 1)
-			m_leftSizer->Hide(m_leftSizer->GetItemCount()-1);
+		if (m_leftSizer->GetItemCount() > 1)
+			m_leftSizer->Hide(m_leftSizer->GetItemCount() - 1);
 
 		m_buttonsSizer = new wxGridSizer(6, 4, 1, 1);
 		m_leftSizer->Add(m_buttonsSizer);
 
 		m_loadedImages.clear();
-		for (size_t i=0; i<paths.size(); i++)
+		for (size_t i = 0; i < paths.size(); i++)
 		{
 			m_loadedImages.push_back(std::unique_ptr<LoadedImage>(new LoadedImage(paths[i], this, m_tbExifInfo, m_leftSizer, m_buttonsSizer)));
 			m_buttonsSizer->Add(m_loadedImages[i]->GetButton());
@@ -34,7 +34,7 @@ void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event )
 	}
 }
 
-void CaptionsMyFrame::m_btnExportInfoOnButtonClick( wxCommandEvent& event )
+void CaptionsMyFrame::m_btnExportInfoOnButtonClick(wxCommandEvent& event)
 {
 	if (!m_name.empty() && !m_loadedImages.empty())
 	{
@@ -50,7 +50,7 @@ void CaptionsMyFrame::m_btnExportInfoOnButtonClick( wxCommandEvent& event )
 			for (const int& x : selections)
 				toSave << "\n" << m_name[x] << ":\n" << openSelectWindow(x);
 
-			std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, _("Save info file"), "", "","txt files (*.txt)|*.txt", wxFD_SAVE) };
+			std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, _("Zapisz plik"), "", "","txt files (*.txt)|*.txt", wxFD_SAVE) };
 
 			if (saveDialog->ShowModal() == wxID_OK)
 			{
@@ -110,6 +110,48 @@ void CaptionsMyFrame::m_btnWriteInfoInPictureOnButtonClick( wxCommandEvent& even
 	}
 }
 
+void CaptionsMyFrame::m_btnReadCaptionsFromFileOnButtonClick( wxCommandEvent& event )
+{
+	std::unique_ptr<wxFileDialog> fileDialog{ new wxFileDialog(this, _("Otworz plik txt"), "", "", "TXT files (*.txt)|*.txt", wxFD_OPEN | wxFD_FILE_MUST_EXIST) };
+	if (fileDialog->ShowModal() == wxID_OK)
+	{
+		wxFileInputStream inputStream(fileDialog->GetPath());
+		wxTextFile file;
+		if (inputStream.IsOk() && file.Open(fileDialog->GetPath()))
+		{
+			std::string line = file.GetFirstLine();
+			int index = checkIfFileName(line);
+			std::stringstream toSave;
+
+			while (!file.Eof() && index == -1)
+			{
+				line = file.GetNextLine();
+				index = checkIfFileName(line);
+			}
+
+			while (!file.Eof())
+			{
+				line = file.GetNextLine();
+				if (checkIfFileName(line) == -1)
+					toSave << line << "\n";
+				else
+				{
+					openSaveWindow(index, toSave);
+					index = checkIfFileName(line);
+					toSave.str(std::string());
+				}
+				if (file.Eof())
+					openSaveWindow(index, toSave);
+			}
+		}
+		else
+		{
+			std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, "Nie udalo sie otworzyc pliku", "Ostrzezenie") };
+			messageDialog->ShowModal();
+		}
+
+	}
+}
 
 wxString CaptionsMyFrame::openSelectWindow(int index) 
 {
@@ -131,6 +173,34 @@ wxString CaptionsMyFrame::openSelectWindow(int index)
 			toSave << infoVec[x].first << ": " << infoVec[x].second << std::endl;
 	}
 	return toSave.str();
+}
+
+void CaptionsMyFrame::openSaveWindow(int index, const std::stringstream& toSave)
+{
+	wxMemoryDC mdc;
+	std::unique_ptr<wxBitmap> bmp{ new wxBitmap(*m_loadedImages[index]->GetBitmap()) };
+	mdc.SelectObject(*bmp);
+	mdc.DrawText(toSave.str(), wxPoint(10, 10));
+
+	std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, std::string("Zapisz nowe " + m_name[index]), "", "","jpg files (*.jpg)|*.jpg", wxFD_SAVE) };
+
+	if (saveDialog->ShowModal() == wxID_OK)
+		bmp->SaveFile(saveDialog->GetPath(), wxBITMAP_TYPE_JPEG);
+
+	mdc.SelectObject(wxNullBitmap);
+}
+
+int CaptionsMyFrame::checkIfFileName(std::string str) const
+{
+	if (str.back() == ':')
+	{
+		str.pop_back();
+		wxString tmp(str);
+		for(unsigned int index = 0; index < m_name.size(); ++index)
+			if (tmp == m_name[index])
+				return index;
+	}
+	return -1;
 }
 
 std::vector<std::string> CaptionsMyFrame::getImages(const wxString& dirPath)

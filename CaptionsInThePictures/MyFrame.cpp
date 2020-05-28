@@ -34,6 +34,9 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_btnWriteInfoInPicture = new wxButton( this, wxID_ANY, wxT("Eksportuj dane Exiv2 na zdjeciu"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer3->Add( m_btnWriteInfoInPicture, 0, wxALIGN_CENTER|wxALL, 5 );
 
+	m_btnReadCaptionsFromFile = new wxButton( this, wxID_ANY, wxT("Wczytaj napisy z pliku"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer3->Add( m_btnReadCaptionsFromFile, 0, wxALIGN_CENTER|wxALL, 5 );
+
 	m_tbExifInfo = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	m_tbExifInfo->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_MENU ) );
 
@@ -52,6 +55,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_btnChooseDirectory->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnChooseDirectoryOnButtonClick ), NULL, this );
 	m_btnExportInfo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnExportInfoOnButtonClick ), NULL, this );
 	m_btnWriteInfoInPicture->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnWriteInfoInPictureOnButtonClick ), NULL, this );
+	m_btnReadCaptionsFromFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnReadCaptionsFromFileOnButtonClick ), NULL, this );
 }
 
 MyFrame::~MyFrame()
@@ -60,5 +64,6 @@ MyFrame::~MyFrame()
 	m_btnChooseDirectory->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnChooseDirectoryOnButtonClick ), NULL, this );
 	m_btnExportInfo->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnExportInfoOnButtonClick ), NULL, this );
 	m_btnWriteInfoInPicture->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnWriteInfoInPictureOnButtonClick ), NULL, this );
+	m_btnReadCaptionsFromFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnReadCaptionsFromFileOnButtonClick ), NULL, this );
 
 }
