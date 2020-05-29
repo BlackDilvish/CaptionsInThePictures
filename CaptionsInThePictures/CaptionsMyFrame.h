@@ -44,6 +44,7 @@ class CaptionsMyFrame : public MyFrame
 
 	wxSizer* m_leftSizer = m_btnChooseDirectory->GetContainingSizer();
 	wxGridSizer* m_buttonsSizer = nullptr;
+	wxScrolledWindow* m_scrolledWindow = nullptr;
 
 private:
 	wxString openSelectWindow(int index);
@@ -52,6 +53,13 @@ private:
 
 	std::vector <std::unique_ptr<LoadedImage>> m_loadedImages;
 	std::vector <wxString> m_name;
+
+
+
+
+
+
+
 };
 
 #endif // __CaptionsMyFrame__
