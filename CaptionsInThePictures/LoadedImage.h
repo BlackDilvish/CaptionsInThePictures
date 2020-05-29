@@ -12,7 +12,7 @@
 class LoadedImage
 {
 public:
-	LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel, wxSizer* sizer, wxGridSizer* m_buttonsSizer);
+	LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCtrl* textPanel, wxSizer* sizer, wxGridSizer* m_buttonsSizer, wxScrolledWindow *scrolledWindow);
 
 	wxBitmapButton* GetButton() const;
 	const wxBitmap* GetBitmap() const;
@@ -34,5 +34,6 @@ private:
 	wxSizer* m_leftSizer;
 	wxGridSizer* m_buttonsSizer;
 	wxWindow* m_parent;
+	wxScrolledWindow* m_scrolledWindow;
 };
 
