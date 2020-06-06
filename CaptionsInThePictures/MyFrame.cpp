@@ -28,15 +28,6 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxBoxSizer* bSizer3;
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 
-	m_btnExportInfo = new wxButton( this, wxID_ANY, wxT("Eksportuj dane Exiv2 do pliku"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer3->Add( m_btnExportInfo, 0, wxALIGN_CENTER|wxALL, 5 );
-
-	m_btnWriteInfoInPicture = new wxButton( this, wxID_ANY, wxT("Eksportuj dane Exiv2 na zdjeciu"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer3->Add( m_btnWriteInfoInPicture, 0, wxALIGN_CENTER|wxALL, 5 );
-
-	m_btnReadCaptionsFromFile = new wxButton( this, wxID_ANY, wxT("Wczytaj napisy z pliku"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer3->Add( m_btnReadCaptionsFromFile, 0, wxALIGN_CENTER|wxALL, 5 );
-
 	m_tbExifInfo = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	m_tbExifInfo->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_MENU ) );
 
@@ -48,22 +39,40 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 
 	this->SetSizer( bSizer1 );
 	this->Layout();
+	m_menubar2 = new wxMenuBar( 0 );
+	m_menuSave = new wxMenu();
+	wxMenuItem* m_itemExportToTxt;
+	m_itemExportToTxt = new wxMenuItem( m_menuSave, wxID_ANY, wxString( wxT("Eksportuj dane exif do &pliku") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuSave->Append( m_itemExportToTxt );
+
+	wxMenuItem* m_itemExportToImage;
+	m_itemExportToImage = new wxMenuItem( m_menuSave, wxID_ANY, wxString( wxT("Eksportuj dane exif na &zdjeciu") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuSave->Append( m_itemExportToImage );
+
+	m_menubar2->Append( m_menuSave, wxT("&Zapisz") );
+
+	m_menuLoad = new wxMenu();
+	wxMenuItem* m_menuLoadCaptions;
+	m_menuLoadCaptions = new wxMenuItem( m_menuLoad, wxID_ANY, wxString( wxT("&Wczytaj napisy z pliku") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuLoad->Append( m_menuLoadCaptions );
+
+	m_menubar2->Append( m_menuLoad, wxT("Wczytaj") );
+
+	this->SetMenuBar( m_menubar2 );
+
 
 	this->Centre( wxBOTH );
 
 	// Connect Events
 	m_btnChooseDirectory->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnChooseDirectoryOnButtonClick ), NULL, this );
-	m_btnExportInfo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnExportInfoOnButtonClick ), NULL, this );
-	m_btnWriteInfoInPicture->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnWriteInfoInPictureOnButtonClick ), NULL, this );
-	m_btnReadCaptionsFromFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnReadCaptionsFromFileOnButtonClick ), NULL, this );
+	m_menuSave->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_itemExportToTxtOnMenuSelection ), this, m_itemExportToTxt->GetId());
+	m_menuSave->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_itemExportToImageOnMenuSelection ), this, m_itemExportToImage->GetId());
+	m_menuLoad->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_menuLoadCaptionsOnMenuSelection ), this, m_menuLoadCaptions->GetId());
 }
 
 MyFrame::~MyFrame()
 {
 	// Disconnect Events
 	m_btnChooseDirectory->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnChooseDirectoryOnButtonClick ), NULL, this );
-	m_btnExportInfo->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnExportInfoOnButtonClick ), NULL, this );
-	m_btnWriteInfoInPicture->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnWriteInfoInPictureOnButtonClick ), NULL, this );
-	m_btnReadCaptionsFromFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::m_btnReadCaptionsFromFileOnButtonClick ), NULL, this );
 
 }

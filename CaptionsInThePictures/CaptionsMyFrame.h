@@ -33,9 +33,9 @@ class CaptionsMyFrame : public MyFrame
 	protected:
 		// Handlers for MyFrame events.
 		void m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event );
-		void m_btnExportInfoOnButtonClick( wxCommandEvent& event );
-		void m_btnWriteInfoInPictureOnButtonClick( wxCommandEvent& event );
-		void m_btnReadCaptionsFromFileOnButtonClick( wxCommandEvent& event );
+		void m_itemExportToTxtOnMenuSelection( wxCommandEvent& event );
+		void m_itemExportToImageOnMenuSelection( wxCommandEvent& event );
+		void m_menuLoadCaptionsOnMenuSelection( wxCommandEvent& event );
 	public:
 		/** Constructor */
 		CaptionsMyFrame( wxWindow* parent );
@@ -53,6 +53,10 @@ private:
 
 	std::vector <std::unique_ptr<LoadedImage>> m_loadedImages;
 	std::vector <wxString> m_name;
+
+
+
+
 
 
 
