@@ -28,7 +28,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	wxBoxSizer* bSizer3;
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 
-	m_tbExifInfo = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+	m_tbExifInfo = new wxRichTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	m_tbExifInfo->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_MENU ) );
 
 	bSizer3->Add( m_tbExifInfo, 1, wxEXPAND | wxALL, 5 );
@@ -56,7 +56,14 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_menuLoadCaptions = new wxMenuItem( m_menuLoad, wxID_ANY, wxString( wxT("&Wczytaj napisy z pliku") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuLoad->Append( m_menuLoadCaptions );
 
-	m_menubar2->Append( m_menuLoad, wxT("Wczytaj") );
+	m_menubar2->Append( m_menuLoad, wxT("&Wczytaj") );
+
+	m_menuInfo = new wxMenu();
+	wxMenuItem* m_menuAuthors;
+	m_menuAuthors = new wxMenuItem( m_menuInfo, wxID_ANY, wxString( wxT("&Autorzy") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuInfo->Append( m_menuAuthors );
+
+	m_menubar2->Append( m_menuInfo, wxT("&Info") );
 
 	this->SetMenuBar( m_menubar2 );
 
@@ -68,6 +75,7 @@ MyFrame::MyFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_menuSave->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_itemExportToTxtOnMenuSelection ), this, m_itemExportToTxt->GetId());
 	m_menuSave->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_itemExportToImageOnMenuSelection ), this, m_itemExportToImage->GetId());
 	m_menuLoad->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_menuLoadCaptionsOnMenuSelection ), this, m_menuLoadCaptions->GetId());
+	m_menuInfo->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MyFrame::m_menuAuthorsOnMenuSelection ), this, m_menuAuthors->GetId());
 }
 
 MyFrame::~MyFrame()

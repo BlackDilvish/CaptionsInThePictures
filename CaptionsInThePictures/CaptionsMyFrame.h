@@ -36,6 +36,7 @@ class CaptionsMyFrame : public MyFrame
 		void m_itemExportToTxtOnMenuSelection( wxCommandEvent& event );
 		void m_itemExportToImageOnMenuSelection( wxCommandEvent& event );
 		void m_menuLoadCaptionsOnMenuSelection( wxCommandEvent& event );
+		void m_menuAuthorsOnMenuSelection( wxCommandEvent& event );
 	public:
 		/** Constructor */
 		CaptionsMyFrame( wxWindow* parent );
@@ -53,6 +54,7 @@ private:
 
 	std::vector <std::unique_ptr<LoadedImage>> m_loadedImages;
 	std::vector <wxString> m_name;
+
 
 
 

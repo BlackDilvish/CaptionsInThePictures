@@ -4,7 +4,7 @@ CaptionsMyFrame::CaptionsMyFrame( wxWindow* parent )
 :
 MyFrame( parent )
 {
-	SetTitle("Napisy na zdjeciach");
+	SetTitle("CaptionsInThePictures");
 }
 
 void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event )
@@ -165,36 +165,34 @@ void CaptionsMyFrame::m_menuLoadCaptionsOnMenuSelection( wxCommandEvent& event )
 	}
 }
 
-
-std::vector<std::string> CaptionsMyFrame::getImages(const wxString& dirPath)
+void CaptionsMyFrame::m_menuAuthorsOnMenuSelection( wxCommandEvent& event )
 {
-	std::vector<std::string> paths;
-	wxDir dir(dirPath);
+	std::string authorsInfo = u8"Aplikacja \"CaptionsInThePictures\"\nAutorzy:\nGabriel Naleznik\nOlga Kubiszyn\nJan Zajda";
 
-	wxString filename;
-	bool cont = dir.GetFirst(&filename, _T("*.jpg"));
-	while (cont)
-	{
-		paths.push_back(std::string(dirPath + "\\" + filename));
-		m_name.push_back(filename);
-		cont = dir.GetNext(&filename);
-	}
-
-	return paths;
+	std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, authorsInfo, "Autorzy") };
+	messageDialog->ShowModal();
 }
 
 
-int CaptionsMyFrame::checkIfFileName(std::string str) const
+void CaptionsMyFrame::openSaveWindow(int index, const std::stringstream& toSave)
 {
-	if (str.back() == ':')
-	{
-		str.pop_back();
-		wxString tmp(str);
-		for(unsigned int index = 0; index < m_name.size(); ++index)
-			if (tmp == m_name[index])
-				return index;
-	}
-	return -1;
+	wxMemoryDC mdc;
+	std::unique_ptr<wxBitmap> bmp{ new wxBitmap(*m_loadedImages[index]->GetBitmap()) };
+	mdc.SelectObject(*bmp);
+	wxColour colour(255 - bmp->ConvertToImage().GetRed(10, 10), 255 - bmp->ConvertToImage().GetGreen(10, 10), 255 - bmp->ConvertToImage().GetBlue(10, 10));
+	mdc.SetTextForeground(colour);
+	wxFont font;
+	wxSize size = bmp->GetSize();
+	font.SetPixelSize(wxSize(0, size.y / 50));
+	mdc.SetFont(font);
+	mdc.DrawText(toSave.str(), wxPoint(10, 10));
+
+	std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, std::string("Zapisz nowe " + m_name[index]), "", "","jpg files (*.jpg)|*.jpg", wxFD_SAVE) };
+
+	if (saveDialog->ShowModal() == wxID_OK)
+		bmp->SaveFile(saveDialog->GetPath(), wxBITMAP_TYPE_JPEG);
+
+	mdc.SelectObject(wxNullBitmap);
 }
 
 wxString CaptionsMyFrame::openSelectWindow(int index) 
@@ -219,23 +217,32 @@ wxString CaptionsMyFrame::openSelectWindow(int index)
 	return toSave.str();
 }
 
-void CaptionsMyFrame::openSaveWindow(int index, const std::stringstream& toSave)
+int CaptionsMyFrame::checkIfFileName(std::string str) const
 {
-	wxMemoryDC mdc;
-	std::unique_ptr<wxBitmap> bmp{ new wxBitmap(*m_loadedImages[index]->GetBitmap()) };
-	mdc.SelectObject(*bmp);
-	wxColour colour(255 - bmp->ConvertToImage().GetRed(10, 10), 255 - bmp->ConvertToImage().GetGreen(10, 10), 255 - bmp->ConvertToImage().GetBlue(10, 10));
-	mdc.SetTextForeground(colour);
-	wxFont font;
-	wxSize size = bmp->GetSize();
-	font.SetPixelSize(wxSize(0, size.y / 50));
-	mdc.SetFont(font);
-	mdc.DrawText(toSave.str(), wxPoint(10, 10));
+	if (str.back() == ':')
+	{
+		str.pop_back();
+		wxString tmp(str);
+		for(unsigned int index = 0; index < m_name.size(); ++index)
+			if (tmp == m_name[index])
+				return index;
+	}
+	return -1;
+}
 
-	std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, std::string("Zapisz nowe " + m_name[index]), "", "","jpg files (*.jpg)|*.jpg", wxFD_SAVE) };
+std::vector<std::string> CaptionsMyFrame::getImages(const wxString& dirPath)
+{
+	std::vector<std::string> paths;
+	wxDir dir(dirPath);
 
-	if (saveDialog->ShowModal() == wxID_OK)
-		bmp->SaveFile(saveDialog->GetPath(), wxBITMAP_TYPE_JPEG);
+	wxString filename;
+	bool cont = dir.GetFirst(&filename, _T("*.jpg"));
+	while (cont)
+	{
+		paths.push_back(std::string(dirPath + "\\" + filename));
+		m_name.push_back(filename);
+		cont = dir.GetNext(&filename);
+	}
 
-	mdc.SelectObject(wxNullBitmap);
+	return paths;
 }

@@ -201,7 +201,7 @@
                                 <property name="resize">Resizable</property>
                                 <property name="show">1</property>
                                 <property name="size"></property>
-                                <property name="style"></property>
+                                <property name="style">wxTE_READONLY</property>
                                 <property name="subclass">; ; forward_declare</property>
                                 <property name="toolbar_pane">0</property>
                                 <property name="tooltip"></property>
@@ -273,7 +273,7 @@
                     </object>
                 </object>
                 <object class="wxMenu" expanded="1">
-                    <property name="label">Wczytaj</property>
+                    <property name="label">&amp;Wczytaj</property>
                     <property name="name">m_menuLoad</property>
                     <property name="permission">protected</property>
                     <object class="wxMenuItem" expanded="1">
@@ -289,6 +289,25 @@
                         <property name="shortcut"></property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">m_menuLoadCaptionsOnMenuSelection</event>
+                    </object>
+                </object>
+                <object class="wxMenu" expanded="1">
+                    <property name="label">&amp;Info</property>
+                    <property name="name">m_menuInfo</property>
+                    <property name="permission">protected</property>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">&amp;Autorzy</property>
+                        <property name="name">m_menuAuthors</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">m_menuAuthorsOnMenuSelection</event>
                     </object>
                 </object>
             </object>

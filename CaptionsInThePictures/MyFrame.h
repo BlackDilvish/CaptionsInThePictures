@@ -39,12 +39,14 @@ class MyFrame : public wxFrame
 		wxMenuBar* m_menubar2;
 		wxMenu* m_menuSave;
 		wxMenu* m_menuLoad;
+		wxMenu* m_menuInfo;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void m_itemExportToTxtOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
 		virtual void m_itemExportToImageOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
 		virtual void m_menuLoadCaptionsOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
+		virtual void m_menuAuthorsOnMenuSelection( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
