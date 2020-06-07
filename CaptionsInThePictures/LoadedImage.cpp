@@ -84,15 +84,16 @@ void LoadedImage::m_btnLoadedImageDoubleClick(wxMouseEvent& event)
 	int new_w, new_h;
 	if (w > h)
 	{
-		new_w = size.x;
+		new_w = size.x - 5;
 		new_h = size.x*h / static_cast<double>(w);
 	}
 	else
 	{
-		new_h = size.y;
+		new_h = size.y - 45;
 		new_w = size.y*w / static_cast<double>(h);
 	}
-	m_btnBig = std::unique_ptr<wxBitmapButton>(new wxBitmapButton(m_parent, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(new_w, new_h), wxPoint(0, 40), wxSize(new_w, new_h)));
+	int position_x = (size.x - new_w) / 2;
+	m_btnBig = std::unique_ptr<wxBitmapButton>(new wxBitmapButton(m_parent, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(new_w, new_h), wxPoint(position_x, 40), wxSize(new_w, new_h)));
 	m_btnBig->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClickBack, this);
 }
 
