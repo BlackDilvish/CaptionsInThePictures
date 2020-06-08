@@ -14,6 +14,11 @@ LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCt
 	m_parent(parent),
 	m_scrolledWindow(scrolledWindow)
 {
+	int code = rotationCode();
+
+	if (code != -1)
+		rotateBitmap(code);
+
 	m_btnImage->Bind(wxEVT_BUTTON, &LoadedImage::m_btnLoadedImageOnButtonClick, this);
 	m_btnImage->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClick, this);
 }
@@ -101,6 +106,51 @@ void LoadedImage::m_btnLoadedImageDoubleClickBack(wxMouseEvent& event)
 {
 	m_leftSizer->Show(m_scrolledWindow);
 	m_btnBig = nullptr;
+}
+
+int LoadedImage::rotationCode() const
+{
+	Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(m_path);
+	assert(image.get() != 0);
+	image->readMetadata();
+	Exiv2::ExifData& exifData = image->exifData();
+
+	if (exifData.empty())
+		return -1;
+	else
+	{
+		try
+		{
+			const char* key = "Exif.Image.Orientation";
+			int code = exifData[key].toLong();
+			return code;
+		}
+		catch (...)
+		{
+			return -1;
+		}
+	}
+}
+
+void LoadedImage::rotateBitmap(int code)
+{
+	switch (code) 
+	{
+	case 3:
+		m_bmpImage.reset(new wxBitmap(m_bmpImage->ConvertToImage().Rotate(M_PI, wxPoint(0, 0))));
+		m_btnImage.reset(new wxBitmapButton(m_scrolledWindow, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(100, 100), wxDefaultPosition, wxSize(100, 100)));
+		break;
+	case 6:
+		m_bmpImage.reset(new wxBitmap(m_bmpImage->ConvertToImage().Rotate(1.5  *M_PI, wxPoint(0, 0))));
+		m_btnImage.reset(new wxBitmapButton(m_scrolledWindow, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(100, 100), wxDefaultPosition, wxSize(100, 100)));
+		break;
+	case 8:
+		m_bmpImage.reset(new wxBitmap(m_bmpImage->ConvertToImage().Rotate(0.5 * M_PI, wxPoint(0, 0))));
+		m_btnImage.reset(new wxBitmapButton(m_scrolledWindow, wxID_ANY, m_bmpImage->ConvertToImage().Rescale(100, 100), wxDefaultPosition, wxSize(100, 100)));
+		break;
+	default:
+		break;
+	}
 }
 
 std::string LoadedImage::getExifInfo() const

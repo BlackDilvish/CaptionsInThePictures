@@ -23,6 +23,9 @@ private:
 	void m_btnLoadedImageDoubleClick(wxMouseEvent& event);
 	void m_btnLoadedImageDoubleClickBack(wxMouseEvent& event);
 
+	int rotationCode() const;
+	void rotateBitmap(int code);
+
 	std::string getExifInfo() const;
 	std::string getIptcInfo() const;
 
