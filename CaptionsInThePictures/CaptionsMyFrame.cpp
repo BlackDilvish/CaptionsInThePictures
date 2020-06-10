@@ -55,8 +55,12 @@ void CaptionsMyFrame::m_itemExportToTxtOnMenuSelection( wxCommandEvent& event )
 		{
 			auto selections = choiceDialog->GetSelections();
 			for (const int& x : selections)
-				toSave << "\n" << m_name[x] << ":\n" << openSelectWindow(x);
-
+			{
+				std::pair <wxString, bool> p = openSelectWindow(x);
+				if(p.second)
+					toSave << "\n" << m_name[x] << ":\n" << p.first;
+			}
+				
 			std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, _("Zapisz plik"), "", "","txt files (*.txt)|*.txt", wxFD_SAVE) };
 
 			if (saveDialog->ShowModal() == wxID_OK)
@@ -81,40 +85,50 @@ void CaptionsMyFrame::m_itemExportToImageOnMenuSelection( wxCommandEvent& event 
 {
 	if (!m_name.empty() && !m_loadedImages.empty())
 	{
-		std::unique_ptr<wxMultiChoiceDialog> choiceDialog{ new wxMultiChoiceDialog(this, "Wybierz zdjecia", "Eksportuj informacje o zdjeciach", m_name.size(), m_name.data()) };
-
-		if (choiceDialog->ShowModal() == wxID_OK)
-		{
-			auto selections = choiceDialog->GetSelections();
-			std::vector<std::stringstream> captionsVector(selections.GetCount());
-			int i = 0;
-
-			for (const int& x : selections)
+		for(unsigned int i = 0; i < m_loadedImages.size(); ++i)
+			if (m_loadedImages[i]->isBig())
 			{
-				captionsVector[i] << "\n" << m_name[x] << ":\n" << openSelectWindow(x);
-
-				wxMemoryDC mdc;
-				std::unique_ptr<wxBitmap> bmp{ new wxBitmap(*m_loadedImages[x]->GetBitmap()) };
-				mdc.SelectObject(*bmp);
-				wxColour colour(255 - bmp->ConvertToImage().GetRed(10, 10), 255 - bmp->ConvertToImage().GetGreen(10, 10), 255 - bmp->ConvertToImage().GetBlue(10, 10));
-				mdc.SetTextForeground(colour);
-				wxFont font;
-				wxSize size = bmp->GetSize();
-				font.SetPixelSize(wxSize(0, size.y / 50));
-				mdc.SetFont(font);
-				mdc.DrawText(captionsVector[i++].str(), wxPoint(10, 10));
-
-				std::unique_ptr<wxFileDialog> saveDialog{ new wxFileDialog(this, std::string("Zapisz nowe " + m_name[x]), "", "","jpg files (*.jpg)|*.jpg", wxFD_SAVE) };
-
-				if (saveDialog->ShowModal() == wxID_OK)
-					bmp->SaveFile(saveDialog->GetPath(), wxBITMAP_TYPE_JPEG);
-
-				mdc.SelectObject(wxNullBitmap);
+				std::stringstream toSave;
+				std::pair <wxString, bool> p = openSelectWindow(i);
+				if (p.second)
+				{
+					toSave << m_name[i] << ":\n" << p.first;
+					openSaveWindow(i, toSave);
+				}
+				break;
 			}
+			else if (i == m_loadedImages.size() - 1)
+			{
+				std::unique_ptr<wxMultiChoiceDialog> choiceDialog{ new wxMultiChoiceDialog(this, "Wybierz zdjecia", "Eksportuj informacje o zdjeciach", m_name.size(), m_name.data()) };
 
-			std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, "Pomyslnie zapisano " + std::to_string(i) + " nowych zdjec", "Sukces") };
-			messageDialog->ShowModal();
-		}
+				if (choiceDialog->ShowModal() == wxID_OK)
+				{
+					auto selections = choiceDialog->GetSelections();
+					std::vector<std::stringstream> captionsVector(selections.GetCount());
+					int index = 0;
+
+					for (const int& x : selections)
+					{
+						std::pair <wxString, bool> p = openSelectWindow(x);
+						if (p.second)
+						{
+							captionsVector[index] << m_name[x] << ":\n" << p.first;
+							openSaveWindow(x, captionsVector[index++]);
+						}
+					}
+
+					if (index)
+					{
+						std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, "Pomyslnie zapisano " + std::to_string(index) + " nowych zdjec", "Sukces") };
+						messageDialog->ShowModal();
+					}
+					else
+					{
+						std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, "Nie wybrano zdjec do zapisania", "Ostrzezenie") };
+						messageDialog->ShowModal();
+					}
+				}
+			}
 	}
 	else
 	{
@@ -133,24 +147,30 @@ void CaptionsMyFrame::m_menuLoadCaptionsOnMenuSelection( wxCommandEvent& event )
 		if (inputStream.IsOk() && file.Open(fileDialog->GetPath()))
 		{
 			std::string line(file.GetFirstLine());
-			int index = checkIfFileName(line);
+			int index = isFilename(line);
 			std::stringstream toSave;
 
-			while (!file.Eof() && index == -1)
+			while (index == -1)
 			{
 				line = file.GetNextLine();
-				index = checkIfFileName(line);
+				index = isFilename(line);
+				if (file.Eof())
+				{
+					std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, "Nie znaleziono pasujacych zdjec!", "Ostrzezenie") };
+					messageDialog->ShowModal();
+					break;
+				}
 			}
 
 			while (!file.Eof())
 			{
 				line = file.GetNextLine();
-				if (checkIfFileName(line) == -1)
+				if (isFilename(line) == -1)
 					toSave << line << "\n";
 				else
 				{
 					openSaveWindow(index, toSave);
-					index = checkIfFileName(line);
+					index = isFilename(line);
 					toSave.str(std::string());
 				}
 				if (file.Eof())
@@ -173,7 +193,6 @@ void CaptionsMyFrame::m_menuAuthorsOnMenuSelection( wxCommandEvent& event )
 	messageDialog->ShowModal();
 }
 
-
 void CaptionsMyFrame::openSaveWindow(int index, const std::stringstream& toSave)
 {
 	wxMemoryDC mdc;
@@ -195,7 +214,7 @@ void CaptionsMyFrame::openSaveWindow(int index, const std::stringstream& toSave)
 	mdc.SelectObject(wxNullBitmap);
 }
 
-wxString CaptionsMyFrame::openSelectWindow(int index) 
+std::pair <wxString, bool> CaptionsMyFrame::openSelectWindow(int index)
 {
 	auto infoVec = m_loadedImages[index]->getInfoArr();
 	auto infoKeys = std::make_unique<wxString[]>(infoVec.size());
@@ -213,11 +232,13 @@ wxString CaptionsMyFrame::openSelectWindow(int index)
 		auto selections = choiceDialog->GetSelections();
 		for (const int& x : selections)
 			toSave << infoVec[x].first << ": " << infoVec[x].second << std::endl;
+		return std::make_pair<wxString, bool>(toSave.str(), true);
 	}
-	return toSave.str();
+	else
+		return std::make_pair<wxString, bool>(toSave.str(), false);
 }
 
-int CaptionsMyFrame::checkIfFileName(std::string str) const
+int CaptionsMyFrame::isFilename(std::string str) const
 {
 	if (str.back() == ':')
 	{

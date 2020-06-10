@@ -18,6 +18,8 @@ public:
 	const wxBitmap* GetBitmap() const;
 
 	std::vector < std::pair <wxString, wxString> > getInfoArr() const;
+
+	bool isBig() const;
 private:
 	void m_btnLoadedImageOnButtonClick(wxCommandEvent& event);
 	void m_btnLoadedImageDoubleClick(wxMouseEvent& event);

@@ -48,9 +48,9 @@ class CaptionsMyFrame : public MyFrame
 	wxScrolledWindow* m_scrolledWindow = nullptr;
 
 private:
-	wxString openSelectWindow(int index);
+	std::pair <wxString, bool> openSelectWindow(int index);
 	void openSaveWindow(int index, const std::stringstream& toSave);
-	int checkIfFileName(std::string str) const;
+	int isFilename(std::string str) const;
 
 	std::vector <std::unique_ptr<LoadedImage>> m_loadedImages;
 	std::vector <wxString> m_name;

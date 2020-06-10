@@ -21,6 +21,7 @@ LoadedImage::LoadedImage(const std::string& path, wxWindow* parent, wxRichTextCt
 
 	m_btnImage->Bind(wxEVT_BUTTON, &LoadedImage::m_btnLoadedImageOnButtonClick, this);
 	m_btnImage->Bind(wxEVT_LEFT_DCLICK, &LoadedImage::m_btnLoadedImageDoubleClick, this);
+	m_btnBig = nullptr;
 }
 
 wxBitmapButton* LoadedImage::GetButton() const
@@ -70,6 +71,10 @@ std::vector < std::pair <wxString, wxString> > LoadedImage::getInfoArr() const
 	return infoArr;
 }
 
+bool LoadedImage::isBig() const
+{
+	return m_btnBig != nullptr;
+}
 //private:
 
 void LoadedImage::m_btnLoadedImageOnButtonClick(wxCommandEvent& event)
