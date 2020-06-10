@@ -4,7 +4,7 @@ CaptionsMyFrame::CaptionsMyFrame( wxWindow* parent )
 :
 MyFrame( parent )
 {
-	SetTitle("CaptionsInThePictures");
+	SetTitle("Napisy na zdjêciach");
 }
 
 void CaptionsMyFrame::m_btnChooseDirectoryOnButtonClick( wxCommandEvent& event )
@@ -187,7 +187,7 @@ void CaptionsMyFrame::m_menuLoadCaptionsOnMenuSelection( wxCommandEvent& event )
 
 void CaptionsMyFrame::m_menuAuthorsOnMenuSelection( wxCommandEvent& event )
 {
-	std::string authorsInfo = u8"Aplikacja \"CaptionsInThePictures\"\nAutorzy:\nGabriel Naleznik\nOlga Kubiszyn\nJan Zajda";
+	std::string authorsInfo = "Projekt 21: \"Napisy na zdjêciach\"\nAutorzy:\nOlga Kubiszyn\nGabriel Naleznik\nJan Zajda";
 
 	std::unique_ptr<wxMessageDialog> messageDialog{ new wxMessageDialog(this, authorsInfo, "Autorzy") };
 	messageDialog->ShowModal();
